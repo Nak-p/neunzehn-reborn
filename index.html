@@ -134,11 +134,18 @@
     const turnInfoEl = document.getElementById('turn-info');
     const endTurnBtn = document.getElementById('end-turn-btn');
 
-    // ---- マップ生成 ----
+    // ---- マップ生成（4象限固定）----
+    // 左上:草原 / 右上:水 / 左下:山 / 右下:砂
+    const QUADRANT_TERRAIN = [
+      [TERRAINS[0], TERRAINS[1]], // row上半分: [左=草原, 右=水]
+      [TERRAINS[2], TERRAINS[3]], // row下半分: [左=山,   右=砂]
+    ];
     for (let r = 0; r < 8; r++) {
       mapData[r] = [];
       for (let c = 0; c < 8; c++) {
-        mapData[r][c] = TERRAINS[Math.floor(Math.random() * TERRAINS.length)];
+        const qRow = r < 4 ? 0 : 1;
+        const qCol = c < 4 ? 0 : 1;
+        mapData[r][c] = QUADRANT_TERRAIN[qRow][qCol];
       }
     }
 
