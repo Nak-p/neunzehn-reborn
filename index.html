@@ -3,9 +3,97 @@
 <head>
   <meta charset="UTF-8">
   <title>NEUNZEHN REBORN</title>
+  <style>
+    body {
+      background: #1a1a2e;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      font-family: monospace;
+      color: #eee;
+    }
+    h1 {
+      margin-bottom: 16px;
+      letter-spacing: 4px;
+      font-size: 1.4rem;
+      color: #a0c4ff;
+    }
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(8, 60px);
+      grid-template-rows: repeat(8, 60px);
+      gap: 2px;
+    }
+    .cell {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: filter 0.15s;
+      user-select: none;
+    }
+    .cell:hover {
+      filter: brightness(1.3);
+    }
+    .grass { background: #4a7c59; }
+    .water { background: #2e6fa3; }
+    .mountain { background: #6b5b45; }
+    .sand  { background: #c9a84c; }
+    #log {
+      margin-top: 16px;
+      font-size: 0.85rem;
+      color: #aaa;
+      height: 1.2em;
+    }
+  </style>
 </head>
 <body>
-  <h1>Hello World</h1>
-  <p>NEUNZEHN REBORN — 開発開始！</p>
+  <h1>NEUNZEHN REBORN</h1>
+  <div id="grid"></div>
+  <div id="log">マスをクリックすると座標が表示されます</div>
+
+  <script>
+    const TERRAINS = [
+      { type: 'grass',    emoji: '🌿', label: '草原' },
+      { type: 'water',    emoji: '🌊', label: '水'   },
+      { type: 'mountain', emoji: '⛰️', label: '山'   },
+      { type: 'sand',     emoji: '🏜️', label: '砂'   },
+    ];
+
+    const grid = document.getElementById('grid');
+    const log  = document.getElementById('log');
+    const map  = [];
+
+    for (let row = 0; row < 8; row++) {
+      map[row] = [];
+      for (let col = 0; col < 8; col++) {
+        const terrain = TERRAINS[Math.floor(Math.random() * TERRAINS.length)];
+        map[row][col] = terrain;
+
+        const cell = document.createElement('div');
+        cell.className = `cell ${terrain.type}`;
+        cell.textContent = terrain.emoji;
+        cell.dataset.row = row;
+        cell.dataset.col = col;
+
+        cell.addEventListener('click', () => {
+          const r = +cell.dataset.row;
+          const c = +cell.dataset.col;
+          const msg = `(${c}, ${r}) — ${terrain.label}`;
+          log.textContent = msg;
+          console.log(msg);
+        });
+
+        grid.appendChild(cell);
+      }
+    }
+  </script>
 </body>
 </html>
