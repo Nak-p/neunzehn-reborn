@@ -117,10 +117,10 @@
 
     // ---- ユニット初期配置（4隅） ----
     const UNITS = [
-      { id: 0, team: 0, emoji: '🧝', row: 0, col: 0, moved: false },
-      { id: 1, team: 1, emoji: '🧙', row: 0, col: 7, moved: false },
-      { id: 2, team: 2, emoji: '🧜', row: 7, col: 0, moved: false },
-      { id: 3, team: 3, emoji: '🐉', row: 7, col: 7, moved: false },
+      { id: 0, team: 0, emoji: '🧝', row: 0, col: 0 },
+      { id: 1, team: 1, emoji: '🧙', row: 0, col: 7 },
+      { id: 2, team: 2, emoji: '🧜', row: 7, col: 0 },
+      { id: 3, team: 3, emoji: '🐉', row: 7, col: 7 },
     ];
 
     const TEAM_NAMES = ['青', '赤', '緑', '黄'];
@@ -171,7 +171,7 @@
           // ユニットがいる場合
           if (unit) {
             cell.classList.add(`team-${unit.team}`);
-            if (unit.moved) cell.classList.add('moved');
+  
             const marker = document.createElement('div');
             marker.className = 'unit-marker';
             marker.textContent = unit.emoji;
@@ -205,26 +205,22 @@
     function onCellClick(row, col) {
       const clickedUnit = unitAt(row, col);
 
-      // 移動先をクリック
+      // 移動先をクリック → 移動後に自動でターン終了
       if (selectedUnit && isMovable(row, col)) {
-        logEl.textContent = `${TEAM_NAMES[selectedUnit.team]} が (${selectedUnit.col},${selectedUnit.row}) → (${col},${row}) へ移動`;
+        logEl.textContent = `Turn ${turn}: ${TEAM_NAMES[selectedUnit.team]}（${selectedUnit.emoji}）が (${selectedUnit.col},${selectedUnit.row}) → (${col},${row}) へ移動`;
         selectedUnit.row = row;
         selectedUnit.col = col;
-        selectedUnit.moved = true;
         selectedUnit = null;
+        turn++;
+        turnInfoEl.textContent = `Turn ${turn} — ユニットを選んで移動先をクリック`;
         render();
         return;
       }
 
-      // ユニットを選択（未移動のみ）
+      // ユニットを選択
       if (clickedUnit) {
-        if (clickedUnit.moved) {
-          logEl.textContent = `${TEAM_NAMES[clickedUnit.team]} はすでに移動済みです`;
-          selectedUnit = null;
-        } else {
-          selectedUnit = clickedUnit;
-          logEl.textContent = `${TEAM_NAMES[clickedUnit.team]}（${clickedUnit.emoji}）を選択 — 移動先をクリック`;
-        }
+        selectedUnit = clickedUnit;
+        logEl.textContent = `${TEAM_NAMES[clickedUnit.team]}（${clickedUnit.emoji}）を選択 — 移動先をクリック`;
         render();
         return;
       }
@@ -235,15 +231,8 @@
       render();
     }
 
-    // ---- END TURN ----
-    endTurnBtn.addEventListener('click', () => {
-      UNITS.forEach(u => u.moved = false);
-      selectedUnit = null;
-      turn++;
-      turnInfoEl.textContent = `Turn ${turn} — ユニットを選んで移動先をクリック`;
-      logEl.textContent = `Turn ${turn} 開始！`;
-      render();
-    });
+    // END TURNボタンは不使用（1移動=1ターン自動進行）
+    endTurnBtn.style.display = 'none';
 
     render();
   </script>
